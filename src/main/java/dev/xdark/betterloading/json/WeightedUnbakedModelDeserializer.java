@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class WeightedUnbakedModelDeserializer extends TypeAdapter<WeightedUnbakedModel> {
-
-  public static final WeightedUnbakedModelDeserializer INSTANCE =
-      new WeightedUnbakedModelDeserializer();
+  public static final WeightedUnbakedModelDeserializer INSTANCE = new WeightedUnbakedModelDeserializer();
 
   private WeightedUnbakedModelDeserializer() {}
 
@@ -25,10 +23,10 @@ public final class WeightedUnbakedModelDeserializer extends TypeAdapter<Weighted
 
   @Override
   public WeightedUnbakedModel read(JsonReader in) throws IOException {
-    List<ModelVariant> variants = new ArrayList<>();
+    var variants = new ArrayList<ModelVariant>();
     if (in.peek() == JsonToken.BEGIN_ARRAY) {
       in.beginArray();
-      while(in.hasNext()) {
+      while (in.hasNext()) {
         variants.add(ModelVariantDeserializer.INSTANCE.read(in));
       }
       in.endArray();

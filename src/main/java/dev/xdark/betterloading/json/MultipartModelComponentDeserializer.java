@@ -20,11 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MultipartModelComponentDeserializer
-    extends TypeAdapter<MultipartModelComponent> {
-
-  public static final MultipartModelComponentDeserializer INSTANCE =
-      new MultipartModelComponentDeserializer();
+public final class MultipartModelComponentDeserializer extends TypeAdapter<MultipartModelComponent> {
+  public static final MultipartModelComponentDeserializer INSTANCE = new MultipartModelComponentDeserializer();
 
   private MultipartModelComponentDeserializer() {}
 
@@ -36,13 +33,13 @@ public final class MultipartModelComponentDeserializer
   @Override
   public MultipartModelComponent read(JsonReader in) throws IOException {
     in.beginObject();
-    MultipartModelComponent result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
 
   public static MultipartModelComponent implRead(JsonReader in) throws IOException {
-    MultipartModelSelector selector = MultipartModelSelector.TRUE;
+    var selector = MultipartModelSelector.TRUE;
     WeightedUnbakedModel apply = null;
     while (in.hasNext()) {
       switch(in.nextName()) {
@@ -63,8 +60,8 @@ public final class MultipartModelComponentDeserializer
       throw new JsonParseException("No elements found in selector");
     }
 
-    String name = in.nextName();
-    JsonToken token = in.peek();
+    var name = in.nextName();
+    var token = in.peek();
     MultipartModelSelector result;
     if (token == JsonToken.BEGIN_ARRAY) {
       in.beginArray();
@@ -97,54 +94,10 @@ public final class MultipartModelComponentDeserializer
     }
     in.endObject();
     return result;
-
-    /*
-    parse:
-    {
-      MultipartModelSelector result;
-      String name = in.nextName();
-      JsonToken token = in.peek();
-      if (token == JsonToken.BEGIN_ARRAY) {
-        List<MultipartModelSelector> selectors = new ArrayList<>();
-        in.beginArray();
-        while (in.hasNext()) {
-          selectors.add(readSelector(in));
-        }
-        in.endArray();
-        if ("OR".equals(name)) {
-          result = new OrMultipartModelSelector(selectors);
-        } else if ("AND".equals(name)) {
-          result = new AndMultipartModelSelector(selectors);
-        } else {
-          throw new JsonParseException("Unexpected token: " + name);
-        }
-      } else if (token == JsonToken.STRING) {
-        result = new SimpleMultipartModelSelector(name, in.nextString());
-        if (in.hasNext()) {
-          List<MultipartModelSelector> selectors = new ArrayList<>();
-          selectors.add(result);
-          selectors.add(new SimpleMultipartModelSelector(in.nextName(), in.nextString()));
-          while (in.hasNext()) {
-            selectors.add(new SimpleMultipartModelSelector(in.nextName(), in.nextString()));
-          }
-          result = new AndMultipartModelSelector(selectors);
-        }
-      } else if (token == JsonToken.BEGIN_OBJECT) {
-        String name = in.nextName();
-        System.out.println(name);
-        if (!"when".equals(name))
-          break parse;
-        result = new SimpleMultipartModelSelector(name, PARSER.parse(in).toString());
-      } else break parse;
-      in.endObject();
-      return result;
-    }
-    throw new IllegalStateException("Unexpected selector");
-     */
   }
 
   private static JsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
-    boolean lenient = json.isLenient();
+    var lenient = json.isLenient();
     json.setLenient(true);
     try {
       return Streams.parse(json);

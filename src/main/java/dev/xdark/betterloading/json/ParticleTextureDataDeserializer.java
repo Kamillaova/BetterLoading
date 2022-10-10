@@ -12,9 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ParticleTextureDataDeserializer extends TypeAdapter<ParticleTextureData> {
-
-  public static final ParticleTextureDataDeserializer INSTANCE =
-      new ParticleTextureDataDeserializer();
+  public static final ParticleTextureDataDeserializer INSTANCE = new ParticleTextureDataDeserializer();
 
   private ParticleTextureDataDeserializer() {}
 
@@ -26,7 +24,7 @@ public final class ParticleTextureDataDeserializer extends TypeAdapter<ParticleT
   @Override
   public ParticleTextureData read(JsonReader in) throws IOException {
     in.beginObject();
-    ParticleTextureData result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }

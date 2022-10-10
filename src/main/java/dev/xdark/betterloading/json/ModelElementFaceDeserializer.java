@@ -11,7 +11,6 @@ import net.minecraft.util.math.Direction;
 import java.io.IOException;
 
 public final class ModelElementFaceDeserializer extends TypeAdapter<ModelElementFace> {
-
   public static final ModelElementFaceDeserializer INSTANCE = new ModelElementFaceDeserializer();
 
   private ModelElementFaceDeserializer() {}
@@ -24,50 +23,49 @@ public final class ModelElementFaceDeserializer extends TypeAdapter<ModelElement
   @Override
   public ModelElementFace read(JsonReader in) throws IOException {
     in.beginObject();
-    ModelElementFace result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
 
   public static ModelElementFace implRead(JsonReader in) throws IOException {
     Direction direction = null;
-    int tintindex = -1;
+    var tintindex = -1;
     String texture = null;
-    int rotation = 0;
+    var rotation = 0;
     float[] uv = null;
     while (in.hasNext()) {
       switch (in.nextName()) {
-        case "cullface":
-          direction = DirectionDeserializer.INSTANCE.read(in);
-          break;
-        case "tintindex":
-          tintindex = in.nextInt();
-          break;
-        case "texture":
-          texture = in.nextString();
-          break;
-        case "rotation":
+        case "cullface" -> direction = DirectionDeserializer.INSTANCE.read(in);
+        case "tintindex" -> tintindex = in.nextInt();
+        case "texture" -> texture = in.nextString();
+        case "rotation" -> {
           if ((rotation = in.nextInt()) < 0 || rotation % 90 != 0 || rotation / 90 > 3) {
             throw new JsonParseException(
-                "Invalid rotation " + rotation + " found, only 0/90/180/270 allowed");
+              "Invalid rotation " + rotation + " found, only 0/90/180/270 allowed");
           }
-          break;
-        case "uv":
+        }
+        case "uv" -> {
           in.beginArray();
-          uv =
-              new float[] {
-                (float) in.nextDouble(),
-                (float) in.nextDouble(),
-                (float) in.nextDouble(),
-                (float) in.nextDouble()
-              };
+          uv = new float[]{
+            (float) in.nextDouble(),
+            (float) in.nextDouble(),
+            (float) in.nextDouble(),
+            (float) in.nextDouble()
+          };
           in.endArray();
-          break;
-        default:
-          in.skipValue();
+        }
+        default -> in.skipValue();
       }
     }
     return new ModelElementFace(
-        direction, tintindex, texture, new ModelElementTexture(uv, rotation));
+      direction,
+      tintindex,
+      texture,
+      new ModelElementTexture(
+        uv,
+        rotation
+      )
+    );
   }
 }

@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(SpriteIdentifier.class)
 public abstract class SpriteIdentifierMixin {
-
 	@Shadow @Final private Identifier texture;
 	@Shadow @Final private Identifier atlas;
 

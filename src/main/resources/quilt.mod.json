@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "dev.xdark",
+    "id": "betterloading",
+    "version": "${version}",
+    "metadata": {
+      "name": "BetterLoading",
+      "description": "A mod that speeds up Minecraft resource loading.",
+      "contributors": {
+        "xDark": "Original Author",
+        "Kamillaova": "Updated to 1.19 & additional optimizations"
+      },
+      "contact": {
+        "sources": "https://github.com/Kamillaova/BetterLoading"
+      }
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": "dev.xdark.betterloading.BetterLoadingMod"
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "versions": ">=0.17.0-"
+      },
+      {
+        "id": "minecraft",
+        "versions": ">=1.19.2"
+      }
+    ]
+  },
+  "mixin": "betterloading.mixins.json",
+  "access_widener": "betterloading.accesswidener"
+}

@@ -12,7 +12,6 @@ import java.util.Collection;
 
 @Mixin(UnbakedModel.class)
 public interface UnbakedModelMixin extends UnbakedModelExt {
-
   @Shadow
   Collection<Identifier> getModelDependencies();
 

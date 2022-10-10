@@ -12,24 +12,18 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 public final class IOUtil {
-
   private IOUtil() {}
 
   public static BufferedReader toBufferedReader(Reader reader) {
-    if (reader instanceof BufferedReader) {
-      return (BufferedReader) reader;
-    }
-    BufferedReader br = new BufferedReader(reader, 1);
-    UnsafeIO.setReaderBuffer(br, ThreadLocals.charBuffer());
-    return br;
+    if (reader instanceof BufferedReader br) return br;
+    return UnsafeIO.createBufferedReader(reader, ThreadLocals.charBuffer());
   }
 
   public static BufferedReader toBufferedReader(InputStream in, Charset charset) {
     return toBufferedReader(new InputStreamReader(in, charset));
   }
 
-  public static BufferedReader toBufferedReader(File file, Charset charset)
-      throws FileNotFoundException {
+  public static BufferedReader toBufferedReader(File file, Charset charset) throws FileNotFoundException {
     return toBufferedReader(new FileInputStream(file), charset);
   }
 
@@ -39,9 +33,5 @@ public final class IOUtil {
 
   public static JsonReader toJsonReader(InputStream in, Charset charset) {
     return toJsonReader(toBufferedReader(in, charset));
-  }
-
-  public static JsonReader toJsonReader(File file, Charset charset) throws FileNotFoundException {
-    return toJsonReader(toBufferedReader(file, charset));
   }
 }

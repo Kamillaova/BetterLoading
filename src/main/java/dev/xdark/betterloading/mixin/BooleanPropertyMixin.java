@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Mixin(BooleanProperty.class)
 public final class BooleanPropertyMixin {
-
   private static final Optional<Boolean> TRUE = Optional.of(true);
   private static final Optional<Boolean> FALSE = Optional.of(false);
 

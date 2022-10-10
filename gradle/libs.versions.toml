@@ -1,0 +1,14 @@
+[versions]
+minecraft = "1.19.2"
+quilt_loader = "0.17.5-beta.3"
+fabric-yarn = "1.19.2+build.20"
+gradle-shadow = "7.1.2"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+quilt-loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
+fabric-yarn = { module = "net.fabricmc:yarn", version.ref = "fabric-yarn" }
+
+[plugins]
+quilt_loom = { id = "org.quiltmc.loom", version = "1.0.+" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "gradle-shadow" }

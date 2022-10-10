@@ -8,7 +8,6 @@ import net.minecraft.util.math.Direction;
 import java.io.IOException;
 
 public final class AxisDeserializer extends TypeAdapter<Direction.Axis> {
-
   public static final AxisDeserializer INSTANCE = new AxisDeserializer();
 
   private AxisDeserializer() {}

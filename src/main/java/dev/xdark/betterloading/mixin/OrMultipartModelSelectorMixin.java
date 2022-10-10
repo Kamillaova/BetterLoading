@@ -1,6 +1,5 @@
 package dev.xdark.betterloading.mixin;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import dev.xdark.betterloading.internal.GameHelper;
 import dev.xdark.betterloading.internal.Predicates;
@@ -19,7 +18,6 @@ import java.util.function.Predicate;
 
 @Mixin(OrMultipartModelSelector.class)
 public abstract class OrMultipartModelSelectorMixin {
-
   @Shadow @Final private Iterable<? extends MultipartModelSelector> selectors;
 
   // TODO I probably shouldn't overwrite this.
@@ -27,7 +25,7 @@ public abstract class OrMultipartModelSelectorMixin {
   /** @author xDark */
   @Overwrite
   public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
-    List<? extends MultipartModelSelector> list = GameHelper.ensureArrayList(selectors);
+    var list = GameHelper.ensureArrayList(selectors);
     try {
       return Predicates.or(Lists.transform(list, input -> input.getPredicate(stateManager)));
     } finally {

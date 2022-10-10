@@ -9,13 +9,13 @@ import java.util.stream.IntStream;
 
 @Mixin(Sprite.class)
 public abstract class SpriteMixin {
-
   @Redirect(
-      method = "createAnimation",
-      at =
-          @At(
-              value = "INVOKE",
-              target = "Ljava/util/stream/IntStream;range(II)Ljava/util/stream/IntStream;"))
+    method = "createAnimation",
+    at = @At(
+      value = "INVOKE",
+      target = "Ljava/util/stream/IntStream;range(II)Ljava/util/stream/IntStream;"
+    )
+  )
   private IntStream onUnusedCheck(int startInclusive, int endExclusive) {
     return IntStream.empty();
   }

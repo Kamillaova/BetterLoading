@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 
 @Mixin(ResourcePack.class)
 public interface ResourcePackMixin extends ResourcePackExt {
-
   @Shadow
   boolean contains(ResourceType type, Identifier id);
 
@@ -37,8 +36,8 @@ public interface ResourcePackMixin extends ResourcePackExt {
 
   @Override
   default NativeImageHolder tryLoadImage(ResourceType type, Identifier id)
-      throws IOException {
-    try (InputStream in = tryOpen(type, id)) {
+    throws IOException {
+    try (var in = tryOpen(type, id)) {
       if (in == null) {
         return null;
       }
@@ -48,7 +47,7 @@ public interface ResourcePackMixin extends ResourcePackExt {
 
   @Override
   default NativeImageHolder loadImage(ResourceType type, Identifier id) throws IOException {
-    NativeImageHolder image = tryLoadImage(type, id);
+    var image = tryLoadImage(type, id);
     if (image == null) {
       throw new FileNotFoundException(id.toString());
     }
@@ -57,20 +56,21 @@ public interface ResourcePackMixin extends ResourcePackExt {
 
   @Override
   default JsonUnbakedModel tryLoadUnbakedModel(ResourceType type, Identifier id)
-      throws IOException {
-    try (InputStream in = tryOpen(type, id)) {
+    throws IOException {
+    try (var in = tryOpen(type, id)) {
       if (in == null) {
         return null;
       }
       return JsonUnbakedModelDeserializer.INSTANCE.read(
-          new JsonReader(IOUtil.toBufferedReader(in, StandardCharsets.UTF_8)));
+        new JsonReader(IOUtil.toBufferedReader(in, StandardCharsets.UTF_8))
+      );
     }
   }
 
   @Override
   default JsonUnbakedModel loadUnbakedModel(ResourceType type, Identifier id)
-      throws IOException {
-    JsonUnbakedModel model = tryLoadUnbakedModel(type, id);
+    throws IOException {
+    var model = tryLoadUnbakedModel(type, id);
     if (model == null) {
       throw new FileNotFoundException(id.toString());
     }

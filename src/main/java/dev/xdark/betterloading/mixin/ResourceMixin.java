@@ -9,25 +9,43 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 @Mixin(Resource.class)
-public interface ResourceMixin extends ResourceExt {
-
+public abstract class ResourceMixin implements ResourceExt {
   @Shadow
-  InputStream getInputStream();
+  public abstract InputStream getInputStream();
 
   @Override
-  default NativeImageHolder readImage() throws IOException {
+  public NativeImageHolder readImage() throws IOException {
     return new NativeImageHolder(NativeImage.read(getInputStream()));
   }
 
   @Override
-  default JsonUnbakedModel readUnbakedModel() throws IOException {
+  public JsonUnbakedModel readUnbakedModel() throws IOException {
     return JsonUnbakedModelDeserializer.INSTANCE.read(
-        IOUtil.toJsonReader(getInputStream(), StandardCharsets.UTF_8));
+      IOUtil.toJsonReader(
+        getInputStream(),
+        StandardCharsets.UTF_8
+      )
+    );
+  }
+
+  @Redirect(
+    method = "getReader",
+    at = @At(
+      value = "NEW",
+      target = "(Ljava/io/Reader;)Ljava/io/BufferedReader;"
+    )
+  )
+  private static BufferedReader redirectNewBufferedReader(Reader reader) {
+    return IOUtil.toBufferedReader(reader);
   }
 }

@@ -13,14 +13,13 @@ import java.nio.charset.Charset;
 
 @Mixin(GameOptions.class)
 public abstract class GameOptionsMixin {
-
   @Redirect(
       method = "load",
-      at =
-          @At(
-              value = "INVOKE",
-              target =
-                  "Lcom/google/common/io/Files;newReader(Ljava/io/File;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;"))
+      at = @At(
+          value = "INVOKE",
+          target = "Lcom/google/common/io/Files;newReader(Ljava/io/File;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;"
+      )
+  )
   private BufferedReader openFileRead(File file, Charset charset) throws IOException {
     return IOUtil.toBufferedReader(file, charset);
   }

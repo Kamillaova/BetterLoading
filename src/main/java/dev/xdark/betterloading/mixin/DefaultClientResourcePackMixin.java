@@ -20,19 +20,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Mixin(DefaultClientResourcePack.class)
-public abstract class DefaultClientResourcePackMixin extends DefaultResourcePack
-    implements ResourcePackExt {
-
+public abstract class DefaultClientResourcePackMixin extends DefaultResourcePack implements ResourcePackExt {
   @Shadow @Final private ResourceIndex index;
 
-  public DefaultClientResourcePackMixin(PackResourceMetadata metadata, String... namespaces) {
+  protected DefaultClientResourcePackMixin(PackResourceMetadata metadata, String... namespaces) {
     super(metadata, namespaces);
   }
 
   @Override
   public InputStream tryOpen(ResourceType type, Identifier id) throws IOException {
     if (type == ResourceType.CLIENT_RESOURCES) {
-      File file = index.getResource(id);
+      var file = index.getResource(id);
       if (file != null && file.isFile()) {
         try {
           return new FileInputStream(file);

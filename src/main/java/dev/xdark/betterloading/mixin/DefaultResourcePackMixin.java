@@ -1,11 +1,9 @@
 package dev.xdark.betterloading.mixin;
 
-import dev.xdark.betterloading.RuntimeHelper;
 import dev.xdark.betterloading.cache.NativeImageHolder;
 import dev.xdark.betterloading.cache.ResourceCache;
 import dev.xdark.betterloading.internal.DefaultResourcePackExt;
 import dev.xdark.betterloading.internal.ResourceFactoryExt;
-import dev.xdark.betterloading.internal.GameHelper;
 import dev.xdark.betterloading.internal.ResourcePackExt;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.resource.DefaultResourcePack;
@@ -23,44 +21,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.Objects;
 
 @Mixin(DefaultResourcePack.class)
-public abstract class DefaultResourcePackMixin
-    implements DefaultResourcePackExt, ResourcePackExt, ResourceFactoryExt {
-
+public abstract class DefaultResourcePackMixin implements DefaultResourcePackExt, ResourcePackExt, ResourceFactoryExt {
   @Shadow
   @Nullable
   protected abstract InputStream findInputStream(ResourceType type, Identifier id);
 
   private ResourceCache cache;
-  private ResourcePack delegate;
 
   @Inject(method = "<init>", at = @At("RETURN"))
   private void init(PackResourceMetadata metadata, String[] namespaces, CallbackInfo ci) {
-    Field field = GameHelper.getDefaultDelegatingPackField();
-    ResourcePack delegate = null;
-    if (field != null) {
-      delegate =
-          Objects.requireNonNull(
-              RuntimeHelper.getObjectValue(this, field),
-              "Delegate resource pack must be non-null!");
-    }
-    this.delegate = delegate;
-
-    cache = new ResourceCache((ResourcePack) (Object) this);
+    cache = new ResourceCache((ResourcePack) this);
   }
 
   @Override
-  public InputStream superTryOpen(ResourceType type, Identifier id) throws IOException {
-    ResourcePack delegate;
-    if ((delegate = this.delegate) != null) return ((ResourcePackExt) delegate).tryOpen(type, id);
+  public InputStream superTryOpen(ResourceType type, Identifier id) {
     return findInputStream(type, id);
   }
 
   @Override
-  public InputStream tryOpen(ResourceType type, Identifier id) throws IOException {
+  public InputStream tryOpen(ResourceType type, Identifier id) {
     return superTryOpen(type, id);
   }
 
@@ -86,19 +67,15 @@ public abstract class DefaultResourcePackMixin
 
   @Override
   public JsonUnbakedModel getJsonUnbakedModel(Identifier id) throws IOException {
-    JsonUnbakedModel model = tryGetJsonUnbakedModel(id);
-    if (model == null)
-      throw new FileNotFoundException(
-          "Could not get client resource from vanilla pack: " + id.toString());
+    var model = tryGetJsonUnbakedModel(id);
+    if (model == null) throw new FileNotFoundException("Could not get client resource from vanilla pack: " + id.toString());
     return model;
   }
 
   @Override
   public NativeImageHolder getNativeImage(Identifier id) throws IOException {
-    NativeImageHolder image = tryGetNativeImage(id);
-    if (image == null)
-      throw new FileNotFoundException(
-          "Could not get client resource from vanilla pack: " + id.toString());
+    var image = tryGetNativeImage(id);
+    if (image == null) throw new FileNotFoundException("Could not get client resource from vanilla pack: " + id.toString());
     return image;
   }
 }

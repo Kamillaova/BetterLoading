@@ -13,17 +13,14 @@ import java.io.InputStream;
 
 @Mixin(DirectoryResourcePack.class)
 public abstract class DirectoryResourcePackMixin implements FileResourcePackExt {
-
   @Shadow
   @Nullable
   protected abstract File getFile(String name);
 
   @Override
   public InputStream tryOpenFile(String name) throws IOException {
-    File file = getFile(name);
-    if (file == null) {
-      return null;
-    }
+    var file = getFile(name);
+    if (file == null) return null;
     return new FileInputStream(file);
   }
 }

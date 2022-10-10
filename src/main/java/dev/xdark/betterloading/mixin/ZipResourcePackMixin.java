@@ -12,17 +12,14 @@ import java.util.zip.ZipFile;
 
 @Mixin(ZipResourcePack.class)
 public abstract class ZipResourcePackMixin implements FileResourcePackExt {
-
   @Shadow
   protected abstract ZipFile getZipFile() throws IOException;
 
   @Override
   public InputStream tryOpenFile(String name) throws IOException {
-    ZipFile zipFile = this.getZipFile();
-    ZipEntry zipEntry = zipFile.getEntry(name);
-    if (zipEntry == null) {
-      return null;
-    }
+    var zipFile = this.getZipFile();
+    var zipEntry = zipFile.getEntry(name);
+    if (zipEntry == null) return null;
     return zipFile.getInputStream(zipEntry);
   }
 }

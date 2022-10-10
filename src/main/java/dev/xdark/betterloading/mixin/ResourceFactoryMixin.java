@@ -7,47 +7,57 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 @Mixin(ResourceFactory.class)
 public interface ResourceFactoryMixin extends ResourceFactoryExt {
+    @Shadow
+    Optional<Resource> getResource(Identifier id);
 
-  @Shadow
-  Resource getResource(Identifier id) throws IOException;
-
-  @Override
-  default JsonUnbakedModel tryGetJsonUnbakedModel(Identifier id) throws IOException {
-    try (Resource resource = getResource(id)) {
-      return ((ResourceExt) resource).readUnbakedModel();
-    } catch (FileNotFoundException ex) {
-      return null;
+    @Nullable
+    default Resource getResourceNullable(Identifier id) {
+        return getResource(id).orElse(null);
     }
-  }
 
-  @Override
-  default JsonUnbakedModel getJsonUnbakedModel(Identifier id) throws IOException {
-    try (Resource resource = getResource(id)) {
-      return ((ResourceExt) resource).readUnbakedModel();
+    @Override
+    default JsonUnbakedModel tryGetJsonUnbakedModel(Identifier id) throws IOException {
+        var resource = getResourceNullable(id);
+        if (resource == null) return null;
+        try {
+            return ((ResourceExt) resource).readUnbakedModel();
+        } catch (FileNotFoundException ex) {
+            return null;
+        }
     }
-  }
 
-  @Override
-  default NativeImageHolder tryGetNativeImage(Identifier id) throws IOException {
-    try (Resource resource = getResource(id)) {
-      return ((ResourceExt) resource).readImage();
-    } catch (FileNotFoundException ex) {
-      return null;
+    @Override
+    default JsonUnbakedModel getJsonUnbakedModel(Identifier id) throws IOException {
+        var resource = getResourceNullable(id);
+        if (resource == null) return null;
+        return ((ResourceExt) resource).readUnbakedModel();
     }
-  }
 
-  @Override
-  default NativeImageHolder getNativeImage(Identifier id) throws IOException {
-    try (Resource resource = getResource(id)) {
-      return ((ResourceExt) resource).readImage();
+    @Override
+    default NativeImageHolder tryGetNativeImage(Identifier id) throws IOException {
+        var resource = getResourceNullable(id);
+        if (resource == null) return null;
+        try {
+            return ((ResourceExt) resource).readImage();
+        } catch (FileNotFoundException ex) {
+            return null;
+        }
     }
-  }
+
+    @Override
+    default NativeImageHolder getNativeImage(Identifier id) throws IOException {
+        var resource = getResourceNullable(id);
+        if (resource == null) return null;
+        return ((ResourceExt) resource).readImage();
+    }
 }

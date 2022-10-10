@@ -21,7 +21,7 @@ public class RawTextureDataLoaderMixin {
   @Overwrite
   public static int[] loadRawTextureData(ResourceManager resourceManager, Identifier id)
       throws IOException {
-    NativeImageHolder imageHolder = ((ResourceFactoryExt) resourceManager).getNativeImage(id);
+    var imageHolder = ((ResourceFactoryExt) resourceManager).getNativeImage(id);
     return imageHolder.makePixelArray();
   }
 }

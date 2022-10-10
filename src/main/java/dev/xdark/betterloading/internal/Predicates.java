@@ -3,8 +3,8 @@ package dev.xdark.betterloading.internal;
 import java.util.List;
 import java.util.function.Predicate;
 
+@SuppressWarnings("unchecked")
 public final class Predicates {
-
   private static final Predicate<?> TRUE = __ -> true;
   private static final Predicate<?> FALSE = __ -> false;
 
@@ -23,42 +23,46 @@ public final class Predicates {
   }
 
   public static <T> Predicate<T> or(
-      Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c) {
+    Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c
+  ) {
     return t -> a.test(t) || b.test(t) || c.test(t);
   }
 
   public static <T> Predicate<T> or(
-      Predicate<? super T> a, Predicate<T> b, Predicate<? super T> c, Predicate<? super T> d) {
+    Predicate<? super T> a, Predicate<T> b, Predicate<? super T> c, Predicate<? super T> d
+  ) {
     return t -> a.test(t) || b.test(t) || c.test(t) || d.test(t);
   }
 
   public static <T> Predicate<T> or(
-      Predicate<? super T> a,
-      Predicate<? super T> b,
-      Predicate<? super T> c,
-      Predicate<? super T> d,
-      Predicate<? super T> e) {
+    Predicate<? super T> a,
+    Predicate<? super T> b,
+    Predicate<? super T> c,
+    Predicate<? super T> d,
+    Predicate<? super T> e
+  ) {
     return t -> a.test(t) || b.test(t) || c.test(t) || d.test(t) || e.test(t);
   }
 
   public static <T> Predicate<T> or(List<Predicate<T>> predicates) {
-    int j = predicates.size();
+    var j = predicates.size();
     if (j == 0) {
       return alwaysTrue();
     }
-    Predicate<T> first = predicates.get(0);
+    var first = predicates.get(0);
     if (--j == 0) {
       return first;
     }
-    int i = 1;
+    var i = 1;
     while (j >= 4) {
       first =
-          or(
-              first,
-              predicates.get(i),
-              predicates.get(i + 1),
-              predicates.get(i + 2),
-              predicates.get(i + 3));
+        or(
+          first,
+          predicates.get(i),
+          predicates.get(i + 1),
+          predicates.get(i + 2),
+          predicates.get(i + 3)
+        );
       j -= 4;
       i += 4;
     }
@@ -83,45 +87,49 @@ public final class Predicates {
   }
 
   public static <T> Predicate<T> and(
-      Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c) {
+    Predicate<? super T> a, Predicate<? super T> b, Predicate<? super T> c
+  ) {
     return t -> a.test(t) && b.test(t) && c.test(t);
   }
 
   public static <T> Predicate<T> and(
-      Predicate<? super T> a,
-      Predicate<? super T> b,
-      Predicate<? super T> c,
-      Predicate<? super T> d) {
+    Predicate<? super T> a,
+    Predicate<? super T> b,
+    Predicate<? super T> c,
+    Predicate<? super T> d
+  ) {
     return t -> a.test(t) && b.test(t) && c.test(t) && d.test(t);
   }
 
   public static <T> Predicate<T> and(
-      Predicate<? super T> a,
-      Predicate<? super T> b,
-      Predicate<? super T> c,
-      Predicate<? super T> d,
-      Predicate<? super T> e) {
+    Predicate<? super T> a,
+    Predicate<? super T> b,
+    Predicate<? super T> c,
+    Predicate<? super T> d,
+    Predicate<? super T> e
+  ) {
     return t -> a.test(t) && b.test(t) && c.test(t) && d.test(t) && e.test(t);
   }
 
   public static <T> Predicate<T> and(List<Predicate<T>> predicates) {
-    int j = predicates.size();
+    var j = predicates.size();
     if (j == 0) {
       return alwaysTrue();
     }
-    Predicate<T> first = predicates.get(0);
+    var first = predicates.get(0);
     if (--j == 0) {
       return first;
     }
-    int i = 1;
+    var i = 1;
     while (j >= 4) {
       first =
-          and(
-              first,
-              predicates.get(i),
-              predicates.get(i + 1),
-              predicates.get(i + 2),
-              predicates.get(i + 3));
+        and(
+          first,
+          predicates.get(i),
+          predicates.get(i + 1),
+          predicates.get(i + 2),
+          predicates.get(i + 3)
+        );
       j -= 4;
       i += 4;
     }

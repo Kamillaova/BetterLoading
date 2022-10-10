@@ -12,11 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ModelVariantMapDeserializer extends TypeAdapter<ModelVariantMap> {
-
   private final MultipartUnbakedModelDeserializer multipartUnbakedModelDeserializer;
 
-  public ModelVariantMapDeserializer(
-      MultipartUnbakedModelDeserializer multipartUnbakedModelDeserializer) {
+  public ModelVariantMapDeserializer(MultipartUnbakedModelDeserializer multipartUnbakedModelDeserializer) {
     this.multipartUnbakedModelDeserializer = multipartUnbakedModelDeserializer;
   }
 
@@ -28,7 +26,7 @@ public final class ModelVariantMapDeserializer extends TypeAdapter<ModelVariantM
   @Override
   public ModelVariantMap read(JsonReader in) throws IOException {
     in.beginObject();
-    ModelVariantMap result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
@@ -37,10 +35,10 @@ public final class ModelVariantMapDeserializer extends TypeAdapter<ModelVariantM
     Map<String, WeightedUnbakedModel> variants = new HashMap<>();
     MultipartUnbakedModel multipart = null;
     while (in.hasNext()) {
-      switch(in.nextName()) {
+      switch (in.nextName()) {
         case "variants" -> {
           in.beginObject();
-          while(in.hasNext()) {
+          while (in.hasNext()) {
             variants.put(in.nextName(), WeightedUnbakedModelDeserializer.INSTANCE.read(in));
           }
           in.endObject();

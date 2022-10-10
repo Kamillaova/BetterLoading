@@ -24,7 +24,6 @@ import java.util.Set;
 
 @Mixin(ModelLoader.class)
 public abstract class ModelLoaderMixin implements ModelLoaderExt {
-
   @Shadow @Final public static JsonUnbakedModel GENERATION_MARKER;
   @Shadow @Final public static JsonUnbakedModel BLOCK_ENTITY_MARKER;
   @Shadow @Final private static Map<String, String> BUILTIN_MODEL_DEFINITIONS;
@@ -48,7 +47,7 @@ public abstract class ModelLoaderMixin implements ModelLoaderExt {
    */
   @Overwrite
   private JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException {
-    String path = id.getPath();
+    var path = id.getPath();
     if ("builtin/generated".equals(path)) {
       return GENERATION_MARKER;
     }
@@ -58,19 +57,17 @@ public abstract class ModelLoaderMixin implements ModelLoaderExt {
 
     JsonUnbakedModel model;
     if (path.startsWith("builtin/")) {
-      String key = path.substring("builtin/".length());
-      String definition = BUILTIN_MODEL_DEFINITIONS.get(key);
+      var key = path.substring("builtin/".length());
+      var definition = BUILTIN_MODEL_DEFINITIONS.get(key);
       if (definition == null) {
         throw new FileNotFoundException(id.toString());
       }
 
-      model =
-          JsonUnbakedModelDeserializer.INSTANCE.read(new JsonReader(new StringReader(definition)));
+      model = JsonUnbakedModelDeserializer.INSTANCE.read(new JsonReader(new StringReader(definition)));
     } else {
-      model =
-          ((ResourceFactoryExt) this.resourceManager)
-              .getJsonUnbakedModel(
-                  new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json"));
+      model = ((ResourceFactoryExt) this.resourceManager).getJsonUnbakedModel(
+        new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json")
+      );
     }
     model.id = id.toString();
     return model;

@@ -18,15 +18,12 @@ import java.util.function.Predicate;
 
 @Mixin(AndMultipartModelSelector.class)
 public abstract class AndMultipartModelSelectorMixin {
-
   @Shadow @Final private Iterable<? extends MultipartModelSelector> selectors;
 
-  // TODO I probably shouldn't overwrite this.
-  // TODO(fixme)
   /** @author xDark */
   @Overwrite
   public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
-    List<? extends MultipartModelSelector> list = GameHelper.ensureArrayList(selectors);
+    var list = GameHelper.ensureArrayList(selectors);
     try {
       return Predicates.and(Lists.transform(list, input -> input.getPredicate(stateManager)));
     } finally {

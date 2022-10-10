@@ -10,15 +10,15 @@ away unnecessary I/O introduced by Mojang's codebase.
 
 Requirements:
 =============
-
-- Fabric Loader v0.12.5
+- Minecraft 1.19.2
+- Quilt Loader v0.17.0
 
 ---
 
 Building:
 ==========
 
-Install JDK 16, if not already  
+Install JDK 17, if not already  
 Run `./gradlew build`, get files from `build/libs`
 
 ---

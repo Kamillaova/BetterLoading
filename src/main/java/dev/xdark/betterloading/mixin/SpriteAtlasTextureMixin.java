@@ -6,8 +6,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin {
-
   @Shadow @Final private static Logger LOGGER;
 
   /**
@@ -41,13 +40,22 @@ public abstract class SpriteAtlasTextureMixin {
       int atlasHeight,
       int maxLevel,
       int x,
-      int y) {
-    Identifier identifier = this.getTexturePath(info.getId());
+      int y
+  ) {
+    var identifier = this.getTexturePath(info.getId());
 
     try {
-      NativeImage image = ((ResourceFactoryExt) container).getNativeImage(identifier).getImage();
+      var image = ((ResourceFactoryExt) container).getNativeImage(identifier).getImage();
       return new Sprite(
-          (SpriteAtlasTexture) (Object) this, info, maxLevel, atlasWidth, atlasHeight, x, y, image);
+        (SpriteAtlasTexture) (Object) this,
+        info,
+        maxLevel,
+        atlasWidth,
+        atlasHeight,
+        x,
+        y,
+        image
+      );
     } catch (RuntimeException ex) {
       LOGGER.error("Unable to parse metadata from {}", identifier, ex);
       return null;

@@ -9,8 +9,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(StateManager.Builder.class)
 public abstract class StateManagerBuilderMixin {
-
-  @Inject(method = "validate", at = @At("HEAD"), cancellable = true)
+  @Inject(
+    method = "validate",
+    at = @At("HEAD"),
+    cancellable = true
+  )
   private <T extends Comparable<T>> void validate(Property<T> property, CallbackInfo ci) {
     ci.cancel();
   }

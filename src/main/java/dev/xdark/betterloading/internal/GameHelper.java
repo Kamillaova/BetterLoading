@@ -24,10 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipFile;
 
-public final class GameHelper {
+import static dev.xdark.betterloading.RuntimeHelper.sneaky;
 
-  public static final boolean RESOURCE_LOADER_PRESENT =
-      FabricLoader.getInstance().isModLoaded("fabric-resource-loader-v0");
+public final class GameHelper {
   private static final FileSystem DEFAULT = FileSystems.getDefault();
   private static final Class<?> ZIP_PATH;
   private static final MethodHandle ZIPFS_IS_DIR;
@@ -39,41 +38,29 @@ public final class GameHelper {
   private GameHelper() {}
 
   public static void bootstrap() {
-    (bootstrapThread =
-            new FastThreadLocalThread(
-                () -> {
-                  try {
-                    long now = System.currentTimeMillis();
-                    Bootstrap.initialize();
-                    System.out.println(
-                        "Finished bootstrapping in " + (System.currentTimeMillis() - now));
-                  } catch (Throwable t) {
-                    bootstrapThrowable = t;
-                  }
-                },
-                "Bootstrap Thread"))
-        .start();
+    (bootstrapThread = new FastThreadLocalThread(
+      () -> {
+        try {
+          var now = System.currentTimeMillis();
+          Bootstrap.initialize();
+          System.out.println("Finished bootstrapping in " + (System.currentTimeMillis() - now));
+        } catch (Throwable t) {
+          bootstrapThrowable = t;
+        }
+      },
+      "Bootstrap Thread"
+    )).start();
     Schemas.getFixer();
   }
 
   public static void finishBootstrap() throws InterruptedException {
     System.out.println("Waiting for bootstrap to finish...");
     bootstrapThread.join();
-    Throwable bootstrapThrowable = GameHelper.bootstrapThrowable;
+    var bootstrapThrowable = GameHelper.bootstrapThrowable;
     if (bootstrapThrowable != null) {
-      RuntimeHelper._throw(bootstrapThrowable);
+      throw sneaky(bootstrapThrowable);
     }
     Bootstrap.logMissing();
-  }
-
-  public static Field getDefaultDelegatingPackField() {
-    if (!RESOURCE_LOADER_PRESENT) return null;
-    for (Field field : DefaultResourcePack.class.getDeclaredFields()) {
-      if (field.getType() == ResourcePack.class && "fabric_mcJarPack".equals(field.getName())) {
-        return field;
-      }
-    }
-    throw new IllegalStateException("Could not locate delegating resource pack field");
   }
 
   public static boolean isZipPath(Path path) {
@@ -81,7 +68,7 @@ public final class GameHelper {
   }
 
   public static ZipFile openZipFile(FileSystem fs) throws IOException {
-    File file = new File(fs.toString());
+    var file = new File(fs.toString());
     if (file.isFile()) {
       return new ZipFile(file);
     }
@@ -89,9 +76,9 @@ public final class GameHelper {
   }
 
   public static boolean isFile(Path path) {
-    FileSystem fs = path.getFileSystem();
+    var fs = path.getFileSystem();
     if (isZipPath(path)) {
-      byte[] raw = resolveZipPath(path);
+      var raw = resolveZipPath(path);
       return zipExists(fs, raw) && !zipIsDirectory(fs, raw);
     }
     if (DEFAULT == fs) return path.toFile().isFile();
@@ -99,14 +86,14 @@ public final class GameHelper {
   }
 
   public static boolean isDirectory(Path path) {
-    FileSystem fs = path.getFileSystem();
+    var fs = path.getFileSystem();
     if (isZipPath(path)) return zipIsDirectory(fs, resolveZipPath(path));
     if (DEFAULT == fs) return path.toFile().isDirectory();
     return Files.isDirectory(path);
   }
 
   public static boolean exists(Path path) {
-    FileSystem fs = path.getFileSystem();
+    var fs = path.getFileSystem();
     if (isZipPath(path)) return zipExists(fs, resolveZipPath(path));
     if (DEFAULT == fs) return path.toFile().exists();
     return Files.exists(path);
@@ -134,8 +121,7 @@ public final class GameHelper {
     try {
       return (byte[]) ZIP_PATH_RESOLVE.invoke(path);
     } catch (Throwable t) {
-      RuntimeHelper._throw(t);
-      return null;
+      throw sneaky(t);
     }
   }
 
@@ -147,7 +133,7 @@ public final class GameHelper {
     } else {
       size = 16;
     }
-    RecyclableArrayList list = RecyclableArrayList.newInstance(size);
+    var list = RecyclableArrayList.newInstance(size);
     for (E element : elements) list.add(element);
     return (List<E>) list;
   }
@@ -159,19 +145,16 @@ public final class GameHelper {
   static {
     try {
       ZIP_PATH = Class.forName("jdk.nio.zipfs.ZipPath");
-      Class<?> zipfs = Class.forName("jdk.nio.zipfs.ZipFileSystem");
+      var zipfs = Class.forName("jdk.nio.zipfs.ZipFileSystem");
       ZIPFS_IS_DIR =
-          RuntimeHelper.findVirtual(
-              zipfs, "isDirectory", MethodType.methodType(Boolean.TYPE, byte[].class));
+        RuntimeHelper.findVirtual(
+          zipfs, "isDirectory", MethodType.methodType(Boolean.TYPE, byte[].class));
       ZIPFS_EXISTS =
-          RuntimeHelper.findVirtual(
-              zipfs, "exists", MethodType.methodType(Boolean.TYPE, byte[].class));
+        RuntimeHelper.findVirtual(
+          zipfs, "exists", MethodType.methodType(Boolean.TYPE, byte[].class));
       ZIP_PATH_RESOLVE =
-          RuntimeHelper.findVirtual(
-              ZIP_PATH, "getResolvedPath", MethodType.methodType(byte[].class));
-      if (RESOURCE_LOADER_PRESENT) {
-        System.out.println("detected Fabric's resource loader");
-      }
+        RuntimeHelper.findVirtual(
+          ZIP_PATH, "getResolvedPath", MethodType.methodType(byte[].class));
     } catch (ClassNotFoundException ex) {
       throw new ExceptionInInitializerError(ex);
     }

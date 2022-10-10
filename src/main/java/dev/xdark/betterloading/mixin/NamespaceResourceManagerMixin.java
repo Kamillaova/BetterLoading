@@ -19,20 +19,15 @@ import java.util.List;
 
 @Mixin(NamespaceResourceManager.class)
 public abstract class NamespaceResourceManagerMixin implements ResourceFactoryExt {
-
-  @Shadow
-  public abstract void validate(Identifier id) throws IOException;
-
   @Shadow @Final protected List<ResourcePack> packList;
   @Shadow @Final public ResourceType type;
 
   @Override
   public JsonUnbakedModel tryGetJsonUnbakedModel(Identifier id) throws IOException {
-    this.validate(id);
-    List<ResourcePack> packList = this.packList;
-    ResourceType type = this.type;
-    for (int i = packList.size() - 1; i >= 0; --i) {
-      ResourcePack resourcePack = packList.get(i);
+    var packList = this.packList;
+    var type = this.type;
+    for (var i = packList.size() - 1; i >= 0; --i) {
+      var resourcePack = packList.get(i);
       JsonUnbakedModel model;
       if ((model = ((ResourcePackExt) resourcePack).tryLoadUnbakedModel(type, id)) != null) {
         return model;
@@ -43,7 +38,7 @@ public abstract class NamespaceResourceManagerMixin implements ResourceFactoryEx
 
   @Override
   public JsonUnbakedModel getJsonUnbakedModel(Identifier id) throws IOException {
-    JsonUnbakedModel model = tryGetJsonUnbakedModel(id);
+    var model = tryGetJsonUnbakedModel(id);
     if (model == null) {
       throw new FileNotFoundException(id.toString());
     }
@@ -52,11 +47,10 @@ public abstract class NamespaceResourceManagerMixin implements ResourceFactoryEx
 
   @Override
   public NativeImageHolder tryGetNativeImage(Identifier id) throws IOException {
-    this.validate(id);
-    List<ResourcePack> packList = this.packList;
-    ResourceType type = this.type;
-    for (int i = packList.size() - 1; i >= 0; --i) {
-      ResourcePack resourcePack = packList.get(i);
+    var packList = this.packList;
+    var type = this.type;
+    for (var i = packList.size() - 1; i >= 0; --i) {
+      var resourcePack = packList.get(i);
       NativeImageHolder image;
       if ((image = ((ResourcePackExt) resourcePack).tryLoadImage(type, id)) != null) {
         return image;
@@ -67,7 +61,7 @@ public abstract class NamespaceResourceManagerMixin implements ResourceFactoryEx
 
   @Override
   public NativeImageHolder getNativeImage(Identifier id) throws IOException {
-    NativeImageHolder image = tryGetNativeImage(id);
+    var image = tryGetNativeImage(id);
     if (image == null) {
       throw new FileNotFoundException(id.toString());
     }

@@ -3,9 +3,8 @@ package dev.xdark.betterloading.cache;
 import net.minecraft.client.texture.NativeImage;
 
 public final class NativeImageHolder {
-
-  private NativeImage image;
   private int[] pixels;
+  private final NativeImage image;
 
   public NativeImageHolder(NativeImage image) {
     this.image = image;
@@ -15,13 +14,9 @@ public final class NativeImageHolder {
     return image;
   }
 
-  public void replaceImage(NativeImage image) {
-    this.image = image;
-    pixels = null;
-  }
-
+  @SuppressWarnings("deprecation")
   public int[] makePixelArray() {
-    int[] pixels = this.pixels;
+    var pixels = this.pixels;
     if (pixels == null) {
       return this.pixels = image.makePixelArray();
     }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public final class IdentifierDeserializer extends TypeAdapter<Identifier> {
-
   public static final IdentifierDeserializer INSTANCE = new IdentifierDeserializer();
 
   private IdentifierDeserializer() {}

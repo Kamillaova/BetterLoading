@@ -13,15 +13,14 @@ import java.nio.charset.Charset;
 
 @Mixin(ResourceIndex.class)
 public abstract class ResourceIndexMixin {
-
   @Redirect(
-      method = "<init>(Ljava/io/File;Ljava/lang/String;)V",
-      at =
-          @At(
-              value = "INVOKE",
-              target =
-                  "Lcom/google/common/io/Files;newReader(Ljava/io/File;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;"))
+    method = "<init>(Ljava/io/File;Ljava/lang/String;)V",
+    at = @At(
+      value = "INVOKE",
+      target = "Lcom/google/common/io/Files;newReader(Ljava/io/File;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;"
+    )
+  )
   private BufferedReader openFileRead(File file, Charset charset) throws IOException {
-      return IOUtil.toBufferedReader(file, charset);
+    return IOUtil.toBufferedReader(file, charset);
   }
 }

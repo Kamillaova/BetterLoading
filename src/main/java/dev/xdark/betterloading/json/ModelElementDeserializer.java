@@ -17,7 +17,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public final class ModelElementDeserializer extends TypeAdapter<ModelElement> {
-
   public static final ModelElementDeserializer INSTANCE = new ModelElementDeserializer();
 
   private ModelElementDeserializer() {}
@@ -30,32 +29,33 @@ public final class ModelElementDeserializer extends TypeAdapter<ModelElement> {
   @Override
   public ModelElement read(JsonReader in) throws IOException {
     in.beginObject();
-    ModelElement result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
 
   public static ModelElement implRead(JsonReader in) throws IOException {
-    Vec3f from = null, to = null;
+    Vec3f from = null;
+    Vec3f to = null;
     ModelRotation rotation = null;
     Map<Direction, ModelElementFace> faceMap = null;
-    boolean shade = true;
+    var shade = true;
     while (in.hasNext()) {
-      switch(in.nextName()) {
+      switch (in.nextName()) {
         case "from" -> from = verify("from", Vec3fDeserializer.INSTANCE.read(in));
         case "to" -> to = verify("to", Vec3fDeserializer.INSTANCE.read(in));
         case "rotation" -> rotation = ModelRotationDeserializer.INSTANCE.read(in);
         case "faces" -> {
           faceMap = new EnumMap<>(Direction.class);
-          ModelElementFaceDeserializer deserializer = ModelElementFaceDeserializer.INSTANCE;
+          var deserializer = ModelElementFaceDeserializer.INSTANCE;
           in.beginObject();
-          while(in.hasNext()) {
-            String key = in.nextName();
-            Direction direction = Direction.byName(key);
+          while (in.hasNext()) {
+            var key = in.nextName();
+            var direction = Direction.byName(key);
             if (direction == null) {
               throw new JsonParseException("Unknown facing: " + key);
             }
-            ModelElementFace element = deserializer.read(in);
+            var element = deserializer.read(in);
             faceMap.put(direction, element);
           }
           in.endObject();
@@ -82,16 +82,18 @@ public final class ModelElementDeserializer extends TypeAdapter<ModelElement> {
   }
 
   private static Vec3f verify(String name, Vec3f vec3f) {
-    float x, y, z;
-    if (!((x = vec3f.getX()) < -16.0F)
-        && !((y = vec3f.getY()) < -16.0F)
-        && !((z = vec3f.getZ()) < -16.0F)
-        && !(x > 32.0F)
-        && !(y > 32.0F)
-        && !(z > 32.0F)) {
+    float x;
+    float y;
+    float z;
+    if (!((x = vec3f.getX()) < -16.f)
+      && !((y = vec3f.getY()) < -16.f)
+      && !((z = vec3f.getZ()) < -16.f)
+      && !(x > 32.f)
+      && !(y > 32.f)
+      && !(z > 32.f)
+    ) {
       return vec3f;
     }
-    throw new JsonParseException(
-        '\'' + name + "' specifier exceeds the allowed boundaries: " + vec3f);
+    throw new JsonParseException('\'' + name + "' specifier exceeds the allowed boundaries: " + vec3f);
   }
 }

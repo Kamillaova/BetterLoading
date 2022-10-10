@@ -9,14 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface ResourcePackExt {
-
   InputStream tryOpen(ResourceType type, Identifier id) throws IOException;
-
   NativeImageHolder tryLoadImage(ResourceType type, Identifier id) throws IOException;
-
   NativeImageHolder loadImage(ResourceType type, Identifier id) throws IOException;
-
   JsonUnbakedModel tryLoadUnbakedModel(ResourceType type, Identifier id) throws IOException;
-
   JsonUnbakedModel loadUnbakedModel(ResourceType type, Identifier id) throws IOException;
 }

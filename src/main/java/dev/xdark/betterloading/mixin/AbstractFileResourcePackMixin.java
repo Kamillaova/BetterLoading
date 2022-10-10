@@ -2,7 +2,6 @@ package dev.xdark.betterloading.mixin;
 
 import dev.xdark.betterloading.IOUtil;
 import dev.xdark.betterloading.internal.FileResourcePackExt;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -19,7 +18,6 @@ import java.io.Reader;
 
 @Mixin(AbstractFileResourcePack.class)
 public abstract class AbstractFileResourcePackMixin implements FileResourcePackExt {
-
   @Shadow
   protected abstract boolean containsFile(String name);
 
@@ -49,10 +47,13 @@ public abstract class AbstractFileResourcePackMixin implements FileResourcePackE
   }
 
   @Redirect(
-      method =
-          "parseMetadata(Lnet/minecraft/resource/metadata/ResourceMetadataReader;Ljava/io/InputStream;)Ljava/lang/Object;",
-      at = @At(value = "NEW", target = "(Ljava/io/Reader;)Ljava/io/BufferedReader;"))
-  private static BufferedReader bufferReader(Reader reader) {
+    method = "parseMetadata(Lnet/minecraft/resource/metadata/ResourceMetadataReader;Ljava/io/InputStream;)Ljava/lang/Object;",
+    at = @At(
+      value = "NEW",
+      target = "(Ljava/io/Reader;)Ljava/io/BufferedReader;"
+    )
+  )
+  private static BufferedReader redirectNewBufferedReader(Reader reader) {
     return IOUtil.toBufferedReader(reader);
   }
 }

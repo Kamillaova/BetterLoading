@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public final class ModelRotationDeserializer extends TypeAdapter<ModelRotation> {
-
   public static final ModelRotationDeserializer INSTANCE = new ModelRotationDeserializer();
 
   private ModelRotationDeserializer() {}
@@ -26,7 +25,7 @@ public final class ModelRotationDeserializer extends TypeAdapter<ModelRotation> 
   @Override
   public ModelRotation read(JsonReader in) throws IOException {
     in.beginObject();
-    ModelRotation result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
@@ -34,33 +33,30 @@ public final class ModelRotationDeserializer extends TypeAdapter<ModelRotation> 
   public static ModelRotation implRead(JsonReader in) throws IOException {
     Vec3f origin = null;
     Direction.Axis axis = null;
-    float angle = Float.NaN;
-    boolean rescale = false;
+    var angle = Float.NaN;
+    var rescale = false;
     while (in.hasNext()) {
       switch (in.nextName()) {
-        case "origin":
+        case "origin" -> {
           origin = Vec3fDeserializer.INSTANCE.read(in);
           origin.scale(0.0625F);
-          break;
-        case "axis":
+        }
+        case "axis" -> {
           if ((axis = AxisDeserializer.INSTANCE.read(in)) == null) {
             throw new JsonParseException("Invalid rotation axis");
           }
-          break;
-        case "angle":
+        }
+        case "angle" -> {
           float abs;
           if ((angle = (float) in.nextDouble()) != 0.0F
-              && (abs = MathHelper.abs(angle)) != 22.5F
-              && abs != 45.0F) {
+            && (abs = MathHelper.abs(angle)) != 22.5F
+            && abs != 45.0F) {
             throw new JsonParseException(
-                "Invalid rotation " + angle + " found, only -45/-22.5/0/22.5/45 allowed");
+              "Invalid rotation " + angle + " found, only -45/-22.5/0/22.5/45 allowed");
           }
-          break;
-        case "rescale":
-          rescale = in.nextBoolean();
-          break;
-        default:
-          in.skipValue();
+        }
+        case "rescale" -> rescale = in.nextBoolean();
+        default -> in.skipValue();
       }
     }
     if (origin == null) {

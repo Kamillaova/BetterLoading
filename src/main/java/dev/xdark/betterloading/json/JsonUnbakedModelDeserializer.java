@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedModel> {
-
   public static final JsonUnbakedModelDeserializer INSTANCE = new JsonUnbakedModelDeserializer();
 
   private JsonUnbakedModelDeserializer() {}
@@ -34,24 +33,25 @@ public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedM
   @Override
   public JsonUnbakedModel read(JsonReader in) throws IOException {
     in.beginObject();
-    JsonUnbakedModel result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
 
+  @SuppressWarnings("deprecation")
   public static JsonUnbakedModel implRead(JsonReader in) throws IOException {
     List<ModelElement> elements = new ArrayList<>();
     String parent = null;
-    boolean ambientocclusion = true;
+    var ambientocclusion = true;
     Map<String, Either<SpriteIdentifier, String>> textures = new HashMap<>();
     List<ModelOverride> overrides = new ArrayList<>();
-    ModelTransformation display = ModelTransformation.NONE;
+    var display = ModelTransformation.NONE;
     JsonUnbakedModel.GuiLight guiLight = null;
     while (in.hasNext()) {
-      switch(in.nextName()) {
+      switch (in.nextName()) {
         case "elements" -> {
           in.beginArray();
-          while(in.hasNext()) {
+          while (in.hasNext()) {
             elements.add(ModelElementDeserializer.INSTANCE.read(in));
           }
           in.endArray();
@@ -65,9 +65,9 @@ public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedM
         case "ambientocclusion" -> ambientocclusion = in.nextBoolean();
         case "textures" -> {
           in.beginObject();
-          while(in.hasNext()) {
-            String key = in.nextName();
-            String value = in.nextString();
+          while (in.hasNext()) {
+            var key = in.nextName();
+            var value = in.nextString();
             textures.put(key, resolveReference(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, value));
           }
           in.endObject();
@@ -76,7 +76,7 @@ public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedM
         case "gui_light" -> guiLight = GuiLightDeserializer.INSTANCE.read(in);
         case "overrides" -> {
           in.beginArray();
-          while(in.hasNext()) {
+          while (in.hasNext()) {
             overrides.add(ModelOverrideDeserializer.INSTANCE.read(in));
           }
           in.endArray();
@@ -85,13 +85,14 @@ public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedM
       }
     }
     return new JsonUnbakedModel(
-        parent == null ? null : new Identifier(parent),
-        elements,
-        textures,
-        ambientocclusion,
-        guiLight,
-        display,
-        overrides);
+      parent == null ? null : new Identifier(parent),
+      elements,
+      textures,
+      ambientocclusion,
+      guiLight,
+      display,
+      overrides
+    );
   }
 
   private static boolean isTextureReference(String reference) {
@@ -102,7 +103,7 @@ public final class JsonUnbakedModelDeserializer extends TypeAdapter<JsonUnbakedM
     if (isTextureReference(name)) {
       return Either.right(name.substring(1));
     } else {
-      Identifier identifier = Identifier.tryParse(name);
+      var identifier = Identifier.tryParse(name);
       if (identifier == null) {
         throw new JsonParseException(name + " is not valid resource location");
       } else {

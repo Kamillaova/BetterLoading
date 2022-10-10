@@ -18,7 +18,6 @@ import java.util.List;
 
 @Mixin(JsonUnbakedModel.class)
 public abstract class JsonUnbakedModelMixin implements UnbakedModelExt {
-
   @Shadow @Final private List<ModelOverride> overrides;
   @Shadow @Nullable public Identifier parentId;
   @Shadow @Final public List<ModelElement> elements;
@@ -26,11 +25,10 @@ public abstract class JsonUnbakedModelMixin implements UnbakedModelExt {
 
   @Override
   public void putModels(ModelLoader modelLoader) {
-    Identifier parentId = this.parentId;
+    var parentId = this.parentId;
     if (parentId != null) {
-      List<ModelOverride> overrides = this.overrides;
-      ((ModelLoaderExt) modelLoader)
-          .putModels(Collections2.transform(overrides, ModelOverride::getModelId));
+      var overrides = this.overrides;
+      ((ModelLoaderExt) modelLoader).putModels(Collections2.transform(overrides, ModelOverride::getModelId));
       ((ModelLoaderExt) modelLoader).putModel(parentId);
     }
   }
@@ -46,7 +44,7 @@ public abstract class JsonUnbakedModelMixin implements UnbakedModelExt {
     if (!elements.isEmpty() || (parent = this.parent) == null) {
       return elements;
     }
-    JsonUnbakedModel model = parent;
+    var model = parent;
     while (true) {
       if ((elements = model.elements).isEmpty()) {
         if ((model = model.parent) != null) {

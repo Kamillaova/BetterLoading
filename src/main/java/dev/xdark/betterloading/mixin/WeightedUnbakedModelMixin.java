@@ -14,7 +14,6 @@ import java.util.List;
 
 @Mixin(WeightedUnbakedModel.class)
 public abstract class WeightedUnbakedModelMixin implements UnbakedModelExt {
-
   @Shadow
   public abstract List<ModelVariant> getVariants();
 
@@ -22,8 +21,7 @@ public abstract class WeightedUnbakedModelMixin implements UnbakedModelExt {
   public void putModels(ModelLoader modelLoader) {
     Collection<ModelVariant> variants = getVariants();
     if (!variants.isEmpty()) {
-      ((ModelLoaderExt) modelLoader)
-          .putModels(Collections2.transform(variants, ModelVariant::getLocation));
+      ((ModelLoaderExt) modelLoader).putModels(Collections2.transform(variants, ModelVariant::getLocation));
     }
   }
 }

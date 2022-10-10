@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public final class CachedNativeImage extends NativeImage {
-
   public CachedNativeImage(int width, int height, boolean useStb) {
     super(width, height, useStb);
   }
@@ -35,11 +34,10 @@ public final class CachedNativeImage extends NativeImage {
   }
 
   public static CachedNativeImage read(InputStream inputStream) throws IOException {
-    return read(NativeImage.Format.ABGR, inputStream);
+    return read(NativeImage.Format.RGBA, inputStream);
   }
 
-  public static CachedNativeImage read(@Nullable NativeImage.Format format, InputStream inputStream)
-      throws IOException {
+  public static CachedNativeImage read(@Nullable NativeImage.Format format, InputStream inputStream) throws IOException {
     ByteBuffer buffer = null;
 
     CachedNativeImage image;
@@ -56,34 +54,26 @@ public final class CachedNativeImage extends NativeImage {
   }
 
   public static CachedNativeImage read(ByteBuffer buffer) throws IOException {
-    return read(NativeImage.Format.ABGR, buffer);
+    return read(NativeImage.Format.RGBA, buffer);
   }
 
-  public static CachedNativeImage read(@Nullable NativeImage.Format format, ByteBuffer buffer)
-      throws IOException {
+  public static CachedNativeImage read(@Nullable NativeImage.Format format, ByteBuffer buffer) throws IOException {
     if (format != null && !format.isWriteable()) {
       throw new UnsupportedOperationException("Don't know how to read format " + format);
     } else if (MemoryUtil.memAddress(buffer) == 0L) {
       throw new IllegalArgumentException("Invalid buffer");
     } else {
 
-      try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-        IntBuffer x = memoryStack.mallocInt(1);
-        IntBuffer y = memoryStack.mallocInt(1);
-        IntBuffer channels = memoryStack.mallocInt(1);
-        ByteBuffer byteBuffer2 =
-            STBImage.stbi_load_from_memory(
-                buffer, x, y, channels, format == null ? 0 : format.channelCount);
+      try (var memoryStack = MemoryStack.stackPush()) {
+        var x = memoryStack.mallocInt(1);
+        var y = memoryStack.mallocInt(1);
+        var channels = memoryStack.mallocInt(1);
+        var byteBuffer2 = STBImage.stbi_load_from_memory(buffer, x, y, channels, format == null ? 0 : format.channelCount);
         if (byteBuffer2 == null) {
           throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
         }
 
-        return new CachedNativeImage(
-            format == null ? NativeImage.Format.getFormat(channels.get(0)) : format,
-            x.get(0),
-            y.get(0),
-            true,
-            MemoryUtil.memAddress(byteBuffer2));
+        return new CachedNativeImage(format == null ? NativeImage.Format.fromGl(channels.get(0)) : format, x.get(0), y.get(0), true, MemoryUtil.memAddress(byteBuffer2));
       }
     }
   }

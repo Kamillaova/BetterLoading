@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class MultipartUnbakedModelDeserializer extends TypeAdapter<MultipartUnbakedModel> {
-
   private final ModelVariantMap.DeserializationContext ctx;
 
   public MultipartUnbakedModelDeserializer(ModelVariantMap.DeserializationContext ctx) {
@@ -27,7 +26,7 @@ public final class MultipartUnbakedModelDeserializer extends TypeAdapter<Multipa
   @Override
   public MultipartUnbakedModel read(JsonReader in) throws IOException {
     in.beginArray();
-    MultipartUnbakedModel result = implRead(in);
+    var result = implRead(in);
     in.endArray();
     return result;
   }

@@ -22,25 +22,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ModelVariantMap.DeserializationContext.class)
 public abstract class DeserializationContextMixin {
+  @Shadow @Final @Mutable protected Gson gson;
 
-  @Mutable @Shadow @Final protected Gson gson;
-
-  @Inject(method = "<init>", at = @At("RETURN"))
+  @Inject(
+    method = "<init>",
+    at = @At("RETURN")
+  )
   private void onInit(CallbackInfo ci) {
-    MultipartUnbakedModelDeserializer multipartUnbakedModelDeserializer =
-        new MultipartUnbakedModelDeserializer(
-            (ModelVariantMap.DeserializationContext) (Object) this);
-    gson =
-        (new GsonBuilder())
-            .registerTypeAdapter(
-                ModelVariantMap.class,
-                new ModelVariantMapDeserializer(multipartUnbakedModelDeserializer))
-            .registerTypeAdapter(ModelVariant.class, ModelVariantDeserializer.INSTANCE)
-            .registerTypeAdapter(
-                WeightedUnbakedModel.class, WeightedUnbakedModelDeserializer.INSTANCE)
-            .registerTypeAdapter(
-                MultipartModelComponent.class, MultipartModelComponentDeserializer.INSTANCE)
-            .registerTypeAdapter(MultipartUnbakedModel.class, multipartUnbakedModelDeserializer)
-            .create();
+    var multipartUnbakedModelDeserializer = new MultipartUnbakedModelDeserializer(
+      (ModelVariantMap.DeserializationContext) (Object) this
+    );
+    gson = new GsonBuilder()
+      .registerTypeAdapter(
+        ModelVariantMap.class,
+        new ModelVariantMapDeserializer(multipartUnbakedModelDeserializer)
+      ).registerTypeAdapter(
+        ModelVariant.class,
+        ModelVariantDeserializer.INSTANCE
+      ).registerTypeAdapter(
+        WeightedUnbakedModel.class,
+        WeightedUnbakedModelDeserializer.INSTANCE
+      ).registerTypeAdapter(
+        MultipartModelComponent.class,
+        MultipartModelComponentDeserializer.INSTANCE
+      ).registerTypeAdapter(
+        MultipartUnbakedModel.class,
+        multipartUnbakedModelDeserializer
+      ).create();
   }
 }

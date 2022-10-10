@@ -8,7 +8,6 @@ import net.minecraft.util.math.Direction;
 import java.io.IOException;
 
 public final class DirectionDeserializer extends TypeAdapter<Direction> {
-
   public static final DirectionDeserializer INSTANCE = new DirectionDeserializer();
 
   private DirectionDeserializer() {}

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public final class Vec3fDeserializer extends TypeAdapter<Vec3f> {
-
   public static final Vec3fDeserializer INSTANCE = new Vec3fDeserializer();
 
   private Vec3fDeserializer() {}
@@ -22,7 +21,7 @@ public final class Vec3fDeserializer extends TypeAdapter<Vec3f> {
   @Override
   public Vec3f read(JsonReader in) throws IOException {
     in.beginArray();
-    Vec3f result = implRead(in);
+    var result = implRead(in);
     in.endArray();
     return result;
   }

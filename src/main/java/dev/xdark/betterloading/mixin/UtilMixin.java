@@ -13,11 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(Util.class)
 public class UtilMixin {
-
   @Shadow @Final private static AtomicInteger NEXT_WORKER_ID;
 
   @Shadow
-  private static void uncaughtExceptionHandler(Thread thread, Throwable t) {}
+  private static native void uncaughtExceptionHandler(Thread thread, Throwable t);
 
   /**
    * @author xDark
@@ -26,11 +25,14 @@ public class UtilMixin {
   @Overwrite
   private static ExecutorService createIoWorker() {
     return Executors.newCachedThreadPool(
-        r -> {
-          FastThreadLocalThread thread =
-              new FastThreadLocalThread(r, "IO-Worker-" + NEXT_WORKER_ID.getAndIncrement());
-          thread.setUncaughtExceptionHandler(UtilMixin::uncaughtExceptionHandler);
-          return thread;
-        });
+      r -> {
+        var thread = new FastThreadLocalThread(
+          r,
+          "IO-Worker-" + NEXT_WORKER_ID.getAndIncrement()
+        );
+        thread.setUncaughtExceptionHandler(UtilMixin::uncaughtExceptionHandler);
+        return thread;
+      }
+    );
   }
 }

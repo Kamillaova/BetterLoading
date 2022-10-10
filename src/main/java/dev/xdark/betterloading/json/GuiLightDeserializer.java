@@ -8,7 +8,6 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import java.io.IOException;
 
 public final class GuiLightDeserializer extends TypeAdapter<JsonUnbakedModel.GuiLight> {
-
   public static final GuiLightDeserializer INSTANCE = new GuiLightDeserializer();
 
   private GuiLightDeserializer() {}

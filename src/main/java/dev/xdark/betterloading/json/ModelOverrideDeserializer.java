@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ModelOverrideDeserializer extends TypeAdapter<ModelOverride> {
-
   public static final ModelOverrideDeserializer INSTANCE = new ModelOverrideDeserializer();
 
   private ModelOverrideDeserializer() {}
@@ -25,7 +24,7 @@ public final class ModelOverrideDeserializer extends TypeAdapter<ModelOverride> 
   @Override
   public ModelOverride read(JsonReader in) throws IOException {
     in.beginObject();
-    ModelOverride result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
@@ -34,14 +33,14 @@ public final class ModelOverrideDeserializer extends TypeAdapter<ModelOverride> 
     Identifier model = null;
     List<ModelOverride.Condition> conditions = null;
     while (in.hasNext()) {
-      switch(in.nextName()) {
+      switch (in.nextName()) {
         case "model" -> model = IdentifierDeserializer.INSTANCE.read(in);
         case "predicate" -> {
           conditions = new ArrayList<>();
           in.beginObject();
-          while(in.hasNext()) {
-            String key = in.nextName();
-            float value = (float) in.nextDouble();
+          while (in.hasNext()) {
+            var key = in.nextName();
+            var value = (float) in.nextDouble();
             conditions.add(new ModelOverride.Condition(new Identifier(key), value));
           }
           in.endObject();

@@ -9,12 +9,11 @@ import net.minecraft.util.math.Vec3f;
 import java.io.IOException;
 
 public final class TransformationDeserializer extends TypeAdapter<Transformation> {
+  public static final TransformationDeserializer INSTANCE = new TransformationDeserializer();
 
   private static final Vec3f DEFAULT_ROTATION = new Vec3f(0.0F, 0.0F, 0.0F);
   private static final Vec3f DEFAULT_TRANSLATION = new Vec3f(0.0F, 0.0F, 0.0F);
   private static final Vec3f DEFAULT_SCALE = new Vec3f(1.0F, 1.0F, 1.0F);
-
-  public static final TransformationDeserializer INSTANCE = new TransformationDeserializer();
 
   private TransformationDeserializer() {}
 
@@ -26,17 +25,17 @@ public final class TransformationDeserializer extends TypeAdapter<Transformation
   @Override
   public Transformation read(JsonReader in) throws IOException {
     in.beginObject();
-    Transformation result = implRead(in);
+    var result = implRead(in);
     in.endObject();
     return result;
   }
 
   public static Transformation implRead(JsonReader in) throws IOException {
-    Vec3f rotation = DEFAULT_ROTATION;
-    Vec3f translation = DEFAULT_TRANSLATION;
-    Vec3f scale = DEFAULT_SCALE;
-    while(in.hasNext()) {
-      switch(in.nextName()) {
+    var rotation = DEFAULT_ROTATION;
+    var translation = DEFAULT_TRANSLATION;
+    var scale = DEFAULT_SCALE;
+    while (in.hasNext()) {
+      switch (in.nextName()) {
         case "rotation" -> rotation = Vec3fDeserializer.INSTANCE.read(in);
         case "translation" -> {
           translation = Vec3fDeserializer.INSTANCE.read(in);

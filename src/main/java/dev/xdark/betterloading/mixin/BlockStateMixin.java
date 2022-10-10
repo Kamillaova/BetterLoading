@@ -15,16 +15,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(BlockState.class)
-public abstract class BlockStateMixin extends AbstractBlock.AbstractBlockState
-    implements BlockStateExt {
-
+public abstract class BlockStateMixin extends AbstractBlock.AbstractBlockState implements BlockStateExt {
   private BakedModel model;
   private String propertyMapAsString;
 
   private BlockStateMixin(
-      Block block,
-      ImmutableMap<Property<?>, Comparable<?>> propertyMap,
-      MapCodec<BlockState> codec) {
+    Block block,
+    ImmutableMap<Property<?>, Comparable<?>> propertyMap,
+    MapCodec<BlockState> codec
+  ) {
     super(block, propertyMap, codec);
   }
 
@@ -40,12 +39,12 @@ public abstract class BlockStateMixin extends AbstractBlock.AbstractBlockState
 
   @Override
   public String propertyMapToString() {
-    String propertyMapAsString = this.propertyMapAsString;
+    var propertyMapAsString = this.propertyMapAsString;
     if (propertyMapAsString == null) {
-      StringBuilder builder = InternalThreadLocalMap.get().stringBuilder();
+      var builder = InternalThreadLocalMap.get().stringBuilder();
       Iterator<Map.Entry<Property<?>, Comparable<?>>> iterator = getEntries().entrySet().iterator();
       if (iterator.hasNext()) {
-        Map.Entry<Property<?>, Comparable<?>> entry = iterator.next();
+        var entry = iterator.next();
         appendProperty(builder, entry.getKey(), entry.getValue());
         if (iterator.hasNext()) {
           builder.append(',');
@@ -61,10 +60,14 @@ public abstract class BlockStateMixin extends AbstractBlock.AbstractBlockState
   }
 
   private static void appendProperty(
-      StringBuilder builder, Property<?> property, Comparable<?> value) {
+    StringBuilder builder,
+    Property<?> property,
+    Comparable<?> value
+  ) {
     builder.append(property.getName()).append('=').append(propertyValueToString(property, value));
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private static String propertyValueToString(Property property, Comparable<?> value) {
     return property.name(value);
   }

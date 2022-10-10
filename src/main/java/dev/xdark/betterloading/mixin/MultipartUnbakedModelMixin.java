@@ -16,16 +16,15 @@ import java.util.List;
 
 @Mixin(MultipartUnbakedModel.class)
 public abstract class MultipartUnbakedModelMixin implements UnbakedModelExt {
+  @Shadow @Final private StateManager<Block, BlockState> stateFactory;
+  @Shadow @Final private List<MultipartModelComponent> components;
 
   @Shadow
   public abstract List<MultipartModelComponent> getComponents();
 
-  @Shadow @Final private StateManager<Block, BlockState> stateFactory;
-  @Shadow @Final private List<MultipartModelComponent> components;
-
   @Override
   public void putModels(ModelLoader modelLoader) {
-    List<MultipartModelComponent> components = this.getComponents();
+    var components = this.getComponents();
     for (int i = 0, j = components.size(); i < j; i++) {
       ((UnbakedModelExt) components.get(i).getModel()).putModels(modelLoader);
     }

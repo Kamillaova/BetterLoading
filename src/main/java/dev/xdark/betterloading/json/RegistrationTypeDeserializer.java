@@ -8,7 +8,6 @@ import net.minecraft.client.sound.Sound;
 import java.io.IOException;
 
 public final class RegistrationTypeDeserializer extends TypeAdapter<Sound.RegistrationType> {
-
   public static final RegistrationTypeDeserializer INSTANCE = new RegistrationTypeDeserializer();
 
   private RegistrationTypeDeserializer() {}

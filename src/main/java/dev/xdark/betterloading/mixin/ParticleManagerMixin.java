@@ -13,17 +13,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
-
-  @Shadow @Final private Map spriteAwareFactories;
+  @Shadow @Final private Map<Identifier, ?> spriteAwareFactories;
 
   /**
    * @author xDark
@@ -31,18 +28,21 @@ public abstract class ParticleManagerMixin {
    */
   @Overwrite
   private void loadTextureList(
-      ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result) {
-    Identifier identifier =
-        new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
+    ResourceManager resourceManager,
+    Identifier id,
+    Map<Identifier, List<Identifier>> result
+  ) {
+    var identifier = new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
 
-    try (Resource resource = resourceManager.getResource(identifier)) {
+    var resource = resourceManager.getResource(identifier).orElse(null);
+    if (resource == null) return;
+    try {
       ParticleTextureData textureData;
-      try (JsonReader reader =
-          IOUtil.toJsonReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+      try (var reader = IOUtil.toJsonReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
         textureData = ParticleTextureDataDeserializer.INSTANCE.read(reader);
       }
-      List<Identifier> textureList = textureData.getTextureList();
-      boolean isSpriteAware = this.spriteAwareFactories.containsKey(id);
+      var textureList = textureData.getTextureList();
+      var isSpriteAware = this.spriteAwareFactories.containsKey(id);
       if (textureList == null) {
         if (isSpriteAware) {
           throw new IllegalStateException("Missing texture list for particle " + id);
@@ -53,13 +53,13 @@ public abstract class ParticleManagerMixin {
         }
 
         result.put(
-            id,
-            textureList.stream()
-                .map(
-                    (identifierx) ->
-                        new Identifier(
-                            identifierx.getNamespace(), "particle/" + identifierx.getPath()))
-                .collect(Collectors.toList()));
+          id,
+          textureList.stream()
+            .map(identifierx -> new Identifier(
+              identifierx.getNamespace(),
+              "particle/" + identifierx.getPath()
+            )).toList()
+        );
       }
     } catch (IOException ex) {
       throw new IllegalStateException("Failed to load description for particle " + id, ex);
